@@ -19,6 +19,15 @@ async function proxyRequest(request: NextRequest, ctx: ProxyContext): Promise<Re
     }
   }
 
+  // x-client-ip is stamped from the TCP socket by server.js in production.
+  // In dev (plain `next dev`) fall back to the first x-forwarded-for hop.
+  const clientIp =
+    request.headers.get('x-client-ip') ??
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  if (clientIp) {
+    headers.set('x-client-ip', clientIp);
+  }
+
   const body =
     request.method === 'GET' || request.method === 'HEAD'
       ? undefined
