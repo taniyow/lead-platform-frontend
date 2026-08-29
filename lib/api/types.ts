@@ -79,3 +79,41 @@ export interface DistributionLead {
   createdAt: string;
   assignedAt: string | null;
 }
+
+export interface AdminLead {
+  id: number;
+  name: string;
+  normalizedEmail: string;
+  phone: string;
+  ipAddress: string;
+  formName: string;
+  brokerName: string | null;
+  status: LeadStatus;
+  createdAt: string;
+  assignedAt: string | null;
+}
+
+export interface DashboardBrokerStat {
+  id: number;
+  name: string;
+  active: boolean;
+  inDistribution: boolean;
+  distributionActive: boolean;
+  percentage: number | null;
+  dailyCap: number;
+  sentToday: number;
+  openNow: boolean;
+}
+
+export interface DashboardStats {
+  leadCounts: {
+    total: number;
+    sent: number;
+    unsent: number;
+    duplicate: number;
+    failed: number;
+  };
+  brokers: DashboardBrokerStat[];
+  form: { id: number; name: string; slug: string } | null;
+  distribution: { id: number; createdAt: string } | null;
+}
