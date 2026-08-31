@@ -11,6 +11,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiClientError, apiFetch } from '@/lib/api/client';
 
+// Mirrors the backend's reserved list so collisions with admin routes are
+// caught inline; the server remains the authority.
+const RESERVED_SLUGS = new Set([
+  'api',
+  'login',
+  'dashboard',
+  'brokers',
+  'form',
+  'distribution',
+  'leads',
+  '_next',
+  'favicon.ico',
+]);
+
 const formSchema = z.object({
   name: z.string().trim().min(1, 'Name is required'),
   slug: z
@@ -20,7 +34,8 @@ const formSchema = z.object({
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
       'Slug may only contain lowercase letters, numbers, and hyphens',
-    ),
+    )
+    .refine((slug) => !RESERVED_SLUGS.has(slug), 'This slug is reserved'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
