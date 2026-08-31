@@ -9,8 +9,10 @@
 const { createServer } = require('http');
 const next = require('next');
 
+// HOST, not HOSTNAME: shells (Git Bash, some Linux setups) export HOSTNAME as
+// the machine name, which would silently become the bind address.
 const port = Number(process.env.PORT ?? 3000);
-const hostname = process.env.HOSTNAME ?? '0.0.0.0';
+const hostname = process.env.HOST ?? '0.0.0.0';
 const dev = process.env.NODE_ENV !== 'production';
 
 const app = next({ dev, hostname, port });
