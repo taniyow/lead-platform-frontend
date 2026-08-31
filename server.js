@@ -8,6 +8,12 @@
  */
 const { createServer } = require('http');
 const next = require('next');
+const { loadEnvConfig } = require('@next/env');
+
+// Next only loads .env files during app.prepare(), which is too late for the
+// bind constants below - load them explicitly first. Existing process env
+// (e.g. from PM2) still takes precedence over .env values.
+loadEnvConfig(__dirname, process.env.NODE_ENV !== 'production');
 
 // HOST, not HOSTNAME: shells (Git Bash, some Linux setups) export HOSTNAME as
 // the machine name, which would silently become the bind address.
