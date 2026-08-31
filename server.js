@@ -12,6 +12,8 @@ const next = require('next');
 // HOST, not HOSTNAME: shells (Git Bash, some Linux setups) export HOSTNAME as
 // the machine name, which would silently become the bind address.
 const port = Number(process.env.PORT ?? 3000);
+// 0.0.0.0 binds every interface: required so the VPS public port and LAN
+// devices can reach the app. It is a bind address, not a browsable URL.
 const hostname = process.env.HOST ?? '0.0.0.0';
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -23,6 +25,7 @@ app.prepare().then(() => {
     req.headers['x-client-ip'] = req.socket.remoteAddress ?? '';
     handle(req, res);
   }).listen(port, hostname, () => {
-    console.log(`Frontend listening on http://${hostname}:${port}`);
+    const openHost = hostname === '0.0.0.0' || hostname === '::' ? 'localhost' : hostname;
+    console.log(`Frontend bound to ${hostname}:${port} - open http://${openHost}:${port}`);
   });
 });
