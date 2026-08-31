@@ -1,0 +1,26 @@
+/**
+ * Minimal custom server whose only job is trustworthy client-IP capture.
+ *
+ * Next.js only fills x-forwarded-for when the client did not send one, so at
+ * an internet-facing edge that header is client-controllable. This server
+ * unconditionally stamps x-client-ip from the TCP socket before Next handles
+ * the request, which the API proxy then forwards to the backend.
+ */
+const { createServer } = require('http');
+const next = require('next');
+
+const port = Number(process.env.PORT ?? 3000);
+const hostname = process.env.HOSTNAME ?? '0.0.0.0';
+const dev = process.env.NODE_ENV !== 'production';
+
+const app = next({ dev, hostname, port });
+const handle = app.getRequestHandler();
+
+app.prepare().then(() => {
+  createServer((req, res) => {
+    req.headers['x-client-ip'] = req.socket.remoteAddress ?? '';
+    handle(req, res);
+  }).listen(port, hostname, () => {
+    console.log(`Frontend listening on http://${hostname}:${port}`);
+  });
+});
