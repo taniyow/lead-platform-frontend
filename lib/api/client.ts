@@ -28,10 +28,22 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   }
 
   if (!response.ok || body.error) {
+    // Prefer field-level validation messages over the generic envelope message
+    // so forms can show the actual reason (e.g. "This slug is reserved").
+    const details = body.error?.details;
+    const detailMessages = Array.isArray(details)
+      ? details
+          .map((d) =>
+            d && typeof d === 'object' && 'message' in d ? String((d as { message: unknown }).message) : null,
+          )
+          .filter((m): m is string => m !== null && m.length > 0)
+      : [];
     throw new ApiClientError(
-      body.error?.message ?? 'Request failed',
+      detailMessages.length > 0
+        ? detailMessages.join('; ')
+        : (body.error?.message ?? 'Request failed'),
       response.status,
-      body.error?.details,
+      details,
     );
   }
 
