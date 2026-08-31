@@ -35,3 +35,47 @@ export interface BrokerLead {
   receivedAt: string | null;
   status: LeadStatus;
 }
+
+export interface LeadForm {
+  id: number;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DistributionBrokerConfig {
+  brokerId: number;
+  name: string;
+  brokerActive: boolean;
+  active: boolean;
+  percentage: number;
+  dailyCap: number;
+  timezone: string;
+  openingTime: string;
+  closingTime: string;
+  workingDays: WeekDay[];
+}
+
+export interface Distribution {
+  id: number;
+  formId: number;
+  formName: string;
+  formSlug: string;
+  createdAt: string;
+  brokers: DistributionBrokerConfig[];
+  totalPercentage: number;
+}
+
+export interface DistributionLead {
+  id: number;
+  name: string;
+  normalizedEmail: string;
+  phone: string;
+  ipAddress: string;
+  formName: string;
+  brokerName: string | null;
+  status: LeadStatus;
+  createdAt: string;
+  assignedAt: string | null;
+}
